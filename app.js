@@ -6,6 +6,18 @@ const $ = (id) => document.getElementById(id);
 const norm = (s) => s.toLocaleLowerCase('tr-TR').replace(/[.,!?"'''""()]/g, '').trim();
 const cleanWord = (w) => w.replace(/^[^a-zA-ZçÇğĞıİöÖşŞüÜ']+|[^a-zA-ZçÇğĞıİöÖşŞüÜ']+$/g, '');
 
+// ─── FIREBASE INIT ───
+const firebaseConfig = {
+  apiKey: "AIzaSyBlqVAOrDqdj4qnR1-UxsUuPaSQR8XvH_c",
+  authDomain: "lyriclab-8f414.firebaseapp.com",
+  projectId: "lyriclab-8f414",
+  storageBucket: "lyriclab-8f414.firebasestorage.app",
+  messagingSenderId: "545686152506",
+  appId: "1:545686152506:web:2c2b84137b85a0b89b5c03"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ─── STATE & LOCALSTORAGE ───
 let profile = {
   xp: 0,
@@ -149,6 +161,47 @@ const vAllahRaw = `[00:01.73] Sana öyle dokununca, you like it
 [03:06.67] Çıkar mı sana sahip?
 [03:10.20] Hakimim, body'neyim hakim`;
 
+const mothToAFlameRaw = `[00:05.40] Oh-woah
+[00:09.11] Woah-oh-oh
+[00:12.82] Woah
+[00:15.87] Like a moth to a flame
+[00:21.40] I'll pull you in, I pulled you back to
+[00:25.94] What you need initially
+[00:32.01] It's just one call away
+[00:37.44] And you'll leave him, you're loyal to me
+[00:42.21] But this time, I let you be
+[00:46.48] 'Cause he seems like he's good for you
+[00:50.60] And he makes you feel like you should
+[00:54.37] And all your friends say he's the one
+[00:58.50] His love for you is true
+[01:02.47] But does he know you call me when he sleeps?
+[01:10.56] But does he know the pictures that you keep?
+[01:18.59] But does he know the reasons that you cry?
+[01:26.53] Or tell me, does he know where your heart lies?
+[01:34.63] Where it truly lies
+[01:39.38] Yeah
+[01:40.52] You should be with him, I let you go from time
+[01:48.18] You should stay with him
+[01:50.44] 'Cause he seems like he's good for you
+[01:54.52] And he makes you feel like you should
+[01:58.49] And all your friends say he's the one
+[02:02.64] His love for you is true (Hey)
+[02:06.47] But does he know you call me when he sleeps? (No, no)
+[02:14.63] But does he know the pictures that you keep? (Oh)
+[02:22.40] But does he know the reasons that you cry?
+[02:30.27] Or tell me, does he know where your heart lies?
+[02:38.67] Where it truly lies
+[02:44.39] Right here with me, babe
+[02:47.61] Where it truly lies
+[02:52.31] My bed
+[02:54.79] Where it truly lies
+[03:00.58] In my heart
+[03:02.88] Where it truly lies
+[03:10.78] Where it truly lies
+[03:27.04] Where it truly lies
+[03:32.76] (Hey)
+[03:42.81] Where it truly lies`;
+
 function parseTimedLyrics(raw) {
   return raw.split('\n').map((rawLine) => {
     const m = rawLine.match(/^\s*\[(\d+)(?::(\d{2})(?:\.(\d+))?)?\]\s*(.*)$/);
@@ -160,15 +213,25 @@ function parseTimedLyrics(raw) {
   }).filter(Boolean).sort((a, b) => a.time - b.time);
 }
 
-let songs = [
+let defaultSongs = [
   { id: 'zKSaL0bJJvc', title: 'Secondhand', artist: 'Don Toliver', img: 'https://i.ytimg.com/vi/zKSaL0bJJvc/hqdefault.jpg', lines: parseTimedLyrics(secondhandRaw) },
-  { id: 'FrIBZl8syac', title: 'Karambol', artist: 'Murda & Motive', img: 'https://i.ytimg.com/vi/FrIBZl8syac/hqdefault.jpg', lines: parseTimedLyrics(vAllahRaw) }
+  { id: 'FrIBZl8syac', title: 'Karambol', artist: 'Murda & Motive', img: 'https://i.ytimg.com/vi/FrIBZl8syac/hqdefault.jpg', lines: parseTimedLyrics(vAllahRaw) },
+  { id: 'u9n7Cw-4_HQ', title: 'Moth To A Flame', artist: 'The Weeknd', img: 'https://i.ytimg.com/vi/u9n7Cw-4_HQ/hqdefault.jpg', lines: parseTimedLyrics(mothToAFlameRaw) }
 ];
 
-try {
-  const savedSongs = JSON.parse(localStorage.getItem('lyriclab_songs') || '[]');
-  songs = songs.concat(savedSongs);
-} catch {}
+let songs = [...defaultSongs];
+
+db.ref('songs').on('value', (snapshot) => {
+  const data = snapshot.val();
+  let customSongs = [];
+  if (data) {
+    customSongs = Object.keys(data).map(key => ({ ...data[key], fbKey: key }));
+  }
+  songs = [...defaultSongs, ...customSongs];
+  if (document.getElementById('homeFeaturedSongs')) {
+    renderAppScreens();
+  }
+});
 
 const distractors = ['night', 'light', 'heart', 'dream', 'love', 'time', 'world', 'fire', 'life', 'mind', 'soul', 'game', 'pain', 'rain', 'home', 'star', 'cold', 'gold', 'dark', 'high', 'free', 'hope', 'lost', 'fast', 'deep', 'real', 'wild', 'long', 'true', 'blue', 'walk', 'run', 'fly', 'cry', 'smile', 'laugh'];
 
@@ -227,7 +290,7 @@ function renderAppScreens() {
         <div class="song-card-title">${s.title}</div>
         <div class="song-card-artist">${s.artist}</div>
       </div>
-      ${i >= 2 ? `<button class="delete-song-btn" onclick="deleteSong(${i}, event)">🗑️</button>` : ''}
+      ${i >= defaultSongs.length ? `<button class="delete-song-btn" onclick="deleteSong(${i}, event)">🗑️</button>` : ''}
     </div>
   `).join('');
 
@@ -604,16 +667,24 @@ $('saveSong').onclick = () => {
   let id = '';
   try { id = new URL(u).searchParams.get('v') || new URL(u).pathname.split('/').pop(); } catch{}
   
-  songs.push({
+  const newSong = {
     id: id || 'zKSaL0bJJvc',
     title: $('songName').value.trim() || 'Yeni Şarkı',
     artist: $('songArtist').value.trim() || 'Bilinmeyen',
     img: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     lines
-  });
+  };
   
-  localStorage.setItem('lyriclab_songs', JSON.stringify(songs.slice(2)));
-  showScreen('screenHome');
+  db.ref('songs').push(newSong)
+    .then(() => {
+      alert('Şarkı başarıyla Global Kütüphaneye eklendi! Artık herkes görebilir.');
+      $('songName').value = '';
+      $('songArtist').value = '';
+      $('youtubeUrl').value = '';
+      $('lyricsInput').value = '';
+      showScreen('screenHome');
+    })
+    .catch(err => alert('Veritabanı Hatası: ' + err.message));
 };
 
 // ─── SYNC STUDIO LOGIC ───
@@ -703,11 +774,13 @@ window.addEventListener('keydown', (e) => {
 // ─── DELETE SONG ───
 window.deleteSong = function(idx, event) {
   event.stopPropagation();
-  if(!confirm("Bu şarkıyı kütüphaneden silmek istediğinize emin misiniz?")) return;
+  if(!confirm("Bu şarkıyı Global Kütüphaneden silmek istediğinize emin misiniz?")) return;
   
-  songs.splice(idx, 1);
-  localStorage.setItem('lyriclab_songs', JSON.stringify(songs.slice(2)));
-  renderAppScreens();
+  const song = songs[idx];
+  if (song && song.fbKey) {
+    db.ref('songs/' + song.fbKey).remove()
+      .catch(err => alert("Silinirken hata: " + err.message));
+  }
 };
 
 // ─── INIT ───

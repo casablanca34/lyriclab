@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>LyricLab App</title>
+  <meta name="theme-color" content="#1da1f2" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-light">
+
+  <!-- ═══════ APP HEADER (LIGHT BLUE) ═══════ -->
+  <header class="app-header" id="appHeader">
+    <button class="header-btn" id="headerBackBtn" style="display:none;">❮</button>
+    <div class="header-title" id="headerTitle">
+      <span class="flag-icon">🇺🇸</span> İNGİLİZCE ⌄
+    </div>
+    <button class="header-btn" id="headerSearchBtn">🔍</button>
+  </header>
+
+  <!-- ═══════ MAIN SCREENS ═══════ -->
+  <main class="app-main" id="appMain">
+    
+    <!-- 🏠 HOME (ANA SAYFA) -->
+    <section class="screen active" id="screenHome">
+      <!-- Circular Progress & Stats -->
+      <div class="home-top-panel">
+        <div class="level-ring-container">
+          <svg class="level-ring" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="ring-progress" id="homeLevelProgress" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="level-info">
+            <div class="level-label">SEVİYE</div>
+            <div class="level-value" id="homeLevelValue">1</div>
+          </div>
+        </div>
+        <div class="home-stats-row">
+          <div class="home-stat">
+            <span class="stat-icon">📘</span>
+            <div class="stat-num" id="homeWordsCount">0</div>
+            <div class="stat-label">Sözcükler</div>
+          </div>
+          <div class="home-stat">
+            <span class="stat-icon">🎵</span>
+            <div class="stat-num" id="homeLyricsCount">0</div>
+            <div class="stat-label">Şarkı Sözleri</div>
+          </div>
+          <div class="home-stat">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-num" id="homeStreak">0</div>
+            <div class="stat-label">Günler</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Below -->
+      <div class="home-content">
+        <div class="section-title-row">
+          <h3 class="app-section-title">ÖNE ÇIKAN ŞARKI SÖZLERİ</h3>
+          <span class="more-dots">•••</span>
+        </div>
+        
+        <div class="song-cards-scroll" id="homeFeaturedSongs">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="section-title-row" style="margin-top:20px;">
+          <h3 class="app-section-title">ŞARKI EKLE (KÜTÜPHANE)</h3>
+        </div>
+        
+        <div class="add-song-card" id="btnGoToImport">
+          <div class="add-song-icon">＋</div>
+          <div class="add-song-text">Kendi şarkını zaman damgalı sözlerle ekle</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 📅 ACTIVITY (AKTİVİTE) -->
+    <section class="screen" id="screenActivity">
+      <div class="activity-timeline" id="activityList">
+        <!-- Populated by JS -->
+        <div style="padding: 20px; text-align: center; color: #888;">Henüz aktivite yok. Bir şarkı oynayın!</div>
+      </div>
+    </section>
+
+    <!-- 📘 VOCABULARY (SÖZCÜK DAĞARCIĞI) -->
+    <section class="screen" id="screenVocabulary">
+      <div class="vocab-header">
+        <span id="vocabTotalCount">0 sözcük</span>
+      </div>
+      <div class="vocab-list" id="vocabList">
+        <!-- Populated by JS -->
+        <div style="padding: 20px; text-align: center; color: #888;">Kelime hazineniz boş.</div>
+      </div>
+    </section>
+
+    <!-- ⭐ REWARDS (ÖDÜLLER) -->
+    <section class="screen" id="screenRewards" style="padding: 16px; background: #f5f6f8;">
+      
+      <!-- LEVEL BADGES -->
+      <div class="rewards-category">
+        <div class="rewards-cat-header">
+          <div class="rewards-cat-title">SEVİYE <span class="badge-blue" id="rewardLevelText">1</span></div>
+          <div class="rewards-cat-progress">1/12</div>
+        </div>
+        <div class="rewards-grid" id="rewardsLevelGrid">
+          <div class="reward-card unlocked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-check">✓</div>
+              <div class="reward-circle blue">
+                <span class="reward-num">1</span>
+                <span class="reward-lbl">SEVİYE</span>
+                <span class="reward-stars">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="reward-card locked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-circle gray">
+                <span class="reward-num">10</span>
+                <span class="reward-lbl">SEVİYE</span>
+                <span class="reward-stars">★★</span>
+              </div>
+            </div>
+          </div>
+          <div class="reward-card locked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-circle gray">
+                <span class="reward-num">20</span>
+                <span class="reward-lbl">SEVİYE</span>
+                <span class="reward-stars">★★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LYRICS BADGES -->
+      <div class="rewards-category">
+        <div class="rewards-cat-header">
+          <div class="rewards-cat-title">ŞARKI SÖZLERİ <span class="badge-blue" id="rewardLyricsText">0</span></div>
+          <div class="rewards-cat-progress">0/12</div>
+        </div>
+        <div class="rewards-grid" id="rewardsLyricsGrid">
+          <div class="reward-card locked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-circle gray">
+                <span class="reward-num">10</span>
+                <span class="reward-lbl">ŞARKI SÖZLERİ</span>
+                <span class="reward-stars">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="reward-card locked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-circle gray">
+                <span class="reward-num">50</span>
+                <span class="reward-lbl">ŞARKI SÖZLERİ</span>
+                <span class="reward-stars">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="reward-card locked">
+            <div class="reward-badge-wrapper">
+              <div class="reward-circle gray">
+                <span class="reward-num">100</span>
+                <span class="reward-lbl">ŞARKI SÖZLERİ</span>
+                <span class="reward-stars">★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 👤 PROFILE (PROFİL) -->
+    <section class="screen" id="screenProfile" style="background: #ffffff; padding: 20px;">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img src="https://via.placeholder.com/80/1da1f2/fff?text=👤" alt="Avatar">
+        </div>
+        <div class="profile-info">
+          <div class="profile-name">lyriclab_user</div>
+          <div class="profile-email">Kayıtlı Kullanıcı</div>
+        </div>
+      </div>
+      
+      <div class="profile-menu">
+        <div class="profile-menu-item" onclick="showScreen('screenActivity')">
+          <span class="pm-icon">📅</span> Aktivite
+        </div>
+        <div class="profile-menu-item" onclick="showScreen('screenVocabulary')">
+          <span class="pm-icon">📘</span> Sözcük Dağarcığı
+        </div>
+        <div class="profile-menu-item" onclick="showScreen('screenRewards')">
+          <span class="pm-icon">⭐</span> Ödüller
+        </div>
+        <div class="profile-menu-item">
+          <span class="pm-icon">🎵</span> Çalma listeleri <span class="badge-new">YENİ</span>
+        </div>
+        <div class="profile-menu-item">
+          <span class="pm-icon">⚙️</span> Ayarlar
+        </div>
+      </div>
+
+      <div class="profile-premium-container">
+        <button class="btn-premium">PREMIUM OL</button>
+      </div>
+
+      <div class="profile-footer">
+        <div class="pf-link">Kullanım Şartları</div>
+        <div class="pf-link">Gizlilik Politikası</div>
+        <div class="pf-link">İletişim</div>
+        <div class="pf-link">Hakkında</div>
+        <div class="pf-socials">
+          <span class="soc-icon">f</span>
+          <span class="soc-icon">ig</span>
+          <span class="soc-icon">yt</span>
+          <span class="soc-icon">tt</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⚙️ IMPORT SCREEN (KÜTÜPHANE EKLEME) -->
+    <section class="screen" id="screenImport" style="background:#fff; padding:20px; overflow-y:auto;">
+      <h3 style="color:#333; margin-bottom:15px;">＋ Yeni Şarkı Ekle</h3>
+      
+      <div class="yt-row" style="margin-bottom: 15px;">
+        <input type="url" class="yt-input" id="youtubeUrl" placeholder="https://youtu.be/zKSaL0bJJvc" style="flex:1; padding:10px; border:1px solid #ddd; border-radius:5px;" />
+        <button id="loadYoutube" style="background:#1da1f2; color:#fff; border:none; border-radius:5px; padding:0 15px;">Bağla</button>
+      </div>
+      <div style="margin-bottom:15px;">
+        <input type="text" id="songName" placeholder="Şarkı Adı (örn: Secondhand)" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; margin-bottom:10px;" />
+        <input type="text" id="songArtist" placeholder="Sanatçı (örn: Don Toliver)" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;" />
+      </div>
+      <div style="margin-bottom:15px;">
+        <label style="font-size:0.85rem; color:#666; font-weight:600; margin-bottom:5px; display:block;">Şarkı Sözleri (Düz Metin veya Zaman Damgalı)</label>
+        <textarea id="lyricsInput" rows="6" placeholder="Sözleri buraya yapıştırın..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; resize:vertical; margin-bottom: 10px;"></textarea>
+        <button id="btnStartSync" style="width:100%; padding:12px; background:#4ade80; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">
+          🎙️ Düz Metni Zamanla (Stüdyo Modu)
+        </button>
+      </div>
+      <button id="saveSong" style="width:100%; padding:15px; background:#1da1f2; color:#fff; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">💾 Kaydet ve Kütüphaneye Ekle</button>
+    </section>
+
+  </main>
+
+  <!-- ═══════ BOTTOM NAVIGATION ═══════ -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-target="screenHome">
+      <span class="nav-icon">🏠</span><span class="nav-label">Ana Sayfa</span>
+    </button>
+    <button class="nav-item" data-target="screenActivity">
+      <span class="nav-icon">📅</span><span class="nav-label">Aktivite</span>
+    </button>
+    <button class="nav-item" data-target="screenVocabulary">
+      <span class="nav-icon">📘</span><span class="nav-label">Sözcük Dağ.</span>
+    </button>
+    <button class="nav-item" data-target="screenRewards">
+      <span class="nav-icon">⭐</span><span class="nav-label">Ödüller</span>
+    </button>
+    <button class="nav-item" data-target="screenProfile">
+      <span class="nav-icon">👤</span><span class="nav-label">Profil</span>
+    </button>
+  </nav>
+
+  <!-- ═══════ FULL SCREEN MODALS (PRE-GAME & PRACTICE) ═══════ -->
+  <div class="full-screen-modal" id="modalPreGame" style="display: none;">
+    <div class="pregame-hero">
+      <div class="pregame-overlay"></div>
+      <div class="pregame-topbar">
+        <button class="icon-btn" id="preGameBackBtn">❮</button>
+        <div class="lang-badge">🇺🇸 İNGİLİZCE</div>
+      </div>
+      <div class="pregame-hero-content">
+        <h2 class="pregame-title" id="preGameTitle">Yükleniyor...</h2>
+        <p class="pregame-artist" id="preGameArtist">Yükleniyor...</p>
+      </div>
+    </div>
+
+    <div class="pregame-body">
+      <div class="pregame-subtitle">
+        SEÇİM<br/>
+        <span class="bold-text">ZORLUK SEVİYESİ</span>
+      </div>
+      
+      <div class="difficulty-cards" id="difficultyCards">
+        <div class="diff-card color-easy" data-diff="easy">
+          <div class="diff-icon">😊</div>
+          <div class="diff-info">
+            <div class="diff-name">BAŞLANGIÇ SEVİYESİ</div>
+            <div class="diff-desc" id="descEasy">Hesaplanıyor...</div>
+          </div>
+        </div>
+        <div class="diff-card color-medium" data-diff="medium">
+          <div class="diff-icon">😐</div>
+          <div class="diff-info">
+            <div class="diff-name">ORTA SEVİYE</div>
+            <div class="diff-desc" id="descMedium">Hesaplanıyor...</div>
+          </div>
+        </div>
+        <div class="diff-card color-hard" data-diff="hard">
+          <div class="diff-icon">😟</div>
+          <div class="diff-info">
+            <div class="diff-name">İLERİ SEVİYE</div>
+            <div class="diff-desc" id="descHard">Hesaplanıyor...</div>
+          </div>
+        </div>
+        <div class="diff-card color-expert" data-diff="expert">
+          <div class="diff-icon">😵</div>
+          <div class="diff-info">
+            <div class="diff-name">UZMAN</div>
+            <div class="diff-desc" id="descExpert">Hesaplanıyor...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="full-screen-modal theme-dark" id="modalPractice" style="display: none;">
+    <div class="practice-container">
+      <div class="game-header-bar">
+        <button class="icon-btn" id="gameExitBtn" style="color:#fff;">❮</button>
+        <div class="score-display" id="score">0 XP</div>
+        <div class="track-info" style="flex:1; text-align:center;">
+          <span class="line-count" id="lineCount" style="font-size:0.8rem; color:var(--text-muted);">0 / 0 SATIR</span>
+        </div>
+      </div>
+
+      <div id="ytHolder" class="yt-holder"></div>
+
+      <div class="lyrics-container">
+        <div class="lyric-line prev" id="lyricPrev1"></div>
+        <div class="lyric-line active" id="lyricCurrent" aria-live="polite">Hazırlanıyor...</div>
+        <div class="lyric-line next" id="lyricNext1"></div>
+      </div>
+
+      <div class="progress-wrap" style="border-radius:0;">
+        <div class="progress-bar" id="progressBar" style="width: 0%; background: #1da1f2;"></div>
+      </div>
+
+      <div class="feedback" id="feedback" aria-live="polite" style="margin: 5px 0; min-height: 20px;"></div>
+
+      <div class="choices-grid" id="choicesGrid">
+        <button class="choice-btn color-red" data-index="0" id="choiceBtn0"></button>
+        <button class="choice-btn color-green" data-index="1" id="choiceBtn1"></button>
+        <button class="choice-btn color-orange" data-index="2" id="choiceBtn2"></button>
+        <button class="choice-btn color-blue" data-index="3" id="choiceBtn3"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="full-screen-modal theme-dark" id="modalSyncStudio" style="display: none; background: #111;">
+    <div class="practice-container">
+      <div class="game-header-bar">
+        <button class="icon-btn" id="syncExitBtn" style="color:#fff;">❮</button>
+        <div style="flex:1; text-align:center; font-weight:bold; font-size:0.9rem;">🎙️ ZAMANLAYICI STÜDYO</div>
+      </div>
+
+      <div id="syncYtHolder" class="yt-holder" style="aspect-ratio:16/9; max-height:250px;"></div>
+
+      <div class="sync-lyrics-area">
+        <div class="lyric-line prev" id="syncPrevLine" style="opacity:0.3; font-size:0.9rem;"></div>
+        <div class="lyric-line active" id="syncCurrentLine" style="color:#1da1f2; font-size:1.3rem; margin:20px 0; font-weight:bold;">Sözler Bekleniyor...</div>
+        <div class="lyric-line next" id="syncNextLine" style="opacity:0.5; font-size:1rem;"></div>
+      </div>
+
+      <div style="padding: 20px; text-align:center; padding-bottom:calc(20px + env(safe-area-inset-bottom));">
+        <div style="font-size:0.8rem; color:#888; margin-bottom:15px;">
+          Şarkıcı mavi satırı okumaya başladığı an butona basın!
+        </div>
+        <button id="btnSyncNow" style="width:100%; padding:30px; background:#ef4444; color:white; font-size:1.5rem; font-weight:bold; border:none; border-radius:15px; box-shadow: 0 8px 0 #b91c1c; cursor:pointer;">
+          ZAMANLA (Space)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
